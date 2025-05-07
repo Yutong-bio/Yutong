@@ -1,0 +1,83 @@
+---
+title: "PCA"
+author: "Yutong Liu"
+date: "2025-04-16"
+output: html_document
+---
+
+```{r}
+setwd("C:/Users/ytliu/OneDrive/Desktop")
+data <- read.csv("data.csv", row.names = 1)
+#lode the data file
+
+
+
+
+library("factoextra")
+library("FactoMineR")
+# prepare the PCA process
+
+#PCA 
+pca.data <- PCA(data[,-1], scale.unit = TRUE, graph = FALSE)
+
+fviz_eig(pca.data, addlabels = TRUE, ylim = c(0, 70))
+## get the Eigenvalue functions from factoextra, understand the importance of each principal component
+
+fviz_pca_var(pca.data, col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+##Shows the distribution of variables in the principal component space and the degree to which they are associated with principal components
+
+
+pca.data <- PCA(t(data[,-1]), scale.unit = TRUE, graph = FALSE)
+fviz_pca_ind(pca.data, col.ind = "cos2", 
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+             repel = TRUE)
+##Displays the distribution of observations in the principal component space to analyze the similarities and differences between samples
+
+
+
+library(devtools)
+
+devtools::install_github("kassambara/ggpubr")
+library(ggpubr)
+
+
+a <- fviz_pca_ind(pca.data, col.ind = "cos2", 
+                  gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+                  repel = TRUE)
+
+ggpar(a,
+      title = "Principal Component Analysis",
+      xlab = "PC1", ylab = "PC2",
+      legend.title = "Cos2", legend.position = "top",
+      ggtheme = theme_minimal())
+##Personalize the appearance of the Principal Component Analysis (PCA) plot
+
+pca.data <- PCA(data[,-1], scale.unit = TRUE,ncp = 2, graph = FALSE)
+data$Lineage <- as.factor(data$Lineage)
+
+
+
+library(RColorBrewer)
+
+
+nb.cols <- 3
+mycolors <- colorRampPalette(brewer.pal(3, "Set1"))(nb.cols)
+##color setting
+
+
+
+a <- fviz_pca_ind(pca.data, col.ind = data$Lineage,
+                  palette = mycolors, addEllipses = TRUE)
+##The goal is to get a PCA plot with classification information, colors, and ellipses
+
+
+
+ggpar(a,
+      title = "Principal Component Analysis",
+      xlab = "PC1", ylab = "PC2",
+      legend.title = "Cell type", legend.position = "top",
+      ggtheme = theme_minimal())
+##Use the ggpar function to further set the appearance of the PCA diagram
+
